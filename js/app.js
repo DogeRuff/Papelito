@@ -25,16 +25,26 @@ let enVideo = false;
 ====================== */
 const escenas = [
   { texto: ". . .", fondo: "img/scenes/dark.jpg", posicion: "position1" },
-  { texto: "Estás en clase...", fondo: "img/scenes/dark.jpg", posicion: "position1" },
+  { texto: "Estás en clase.", fondo: "img/scenes/dark.jpg", posicion: "position1" },
   { texto: "De nuevo en la preparatoria...", fondo: "img/scenes/dark.jpg", posicion: "position1" },
-  { texto: "Todo es... normal...", fondo: "img/scenes/classroom.gif", posicion: "position2" },
+  { texto: "Todo es... normal.", fondo: "img/scenes/classroom.gif", posicion: "position2" },
   { texto: "Cómo cualquier otro día.", fondo: "img/scenes/classroom.gif", posicion: "position2" },
-  { texto: " . . . ", fondo: "img/scenes/passing-note.gif", posicion: "position3" },
-  { texto: "Alguien te pasa un papelito 👀", fondo: "img/scenes/passing-note.gif", posicion: "position3" },
+  { texto: "Una clase aburrida.", fondo: "img/scenes/classroom.gif", posicion: "position2" },
+  { texto: "Quieres que ya termine... <br> Solo contando los segundos para <br> que el profesor diga algo cómo...", fondo: "img/scenes/classroom.gif", posicion: "position2" },
+  { texto: "\"Muy bien jovenes! <br> Nos vemos la siguiente clase.\"", fondo: "img/scenes/classroom.gif", posicion: "position2" },
+  { texto: "Pero no llega el momento.", fondo: "img/scenes/classroom.gif", posicion: "position2" },
+  { texto: "Desearías haberte ido de pinta de nuevo.", fondo: "img/scenes/classroom.gif", posicion: "position2" },
+  { texto: "Aunque sientes que hoy <br> alguien te ha estado observando... ", fondo: "img/scenes/dark.jpg", posicion: "position1" },
+  { texto: ". . .", fondo: "img/scenes/passing-note.gif", posicion: "position3" },
+  { texto: "Alguien te pasa un papelito. 👀", fondo: "img/scenes/passing-note.gif", posicion: "position3" },
   { texto: "No es para ti.", fondo: "img/scenes/passing-note.gif", posicion: "position3" },
-  { texto: ". . .", fondo: "img/scenes/dark.jpg", posicion: "position1" },
-  { texto: "O eso pensaste, pero . . . ", fondo: "img/scenes/dark.jpg", posicion: "position1" },
-  { tipo: "video" }
+  { texto: ". . .", fondo: "img/scenes/passing-note.gif", posicion: "position3" },
+  { texto: "O eso pensaste, pero...", fondo: "img/scenes/passing-note.gif", posicion: "position3" },
+  { texto: "Espera un momento...", fondo: "img/scenes/dark.jpg", posicion: "position1" },
+  { texto: "Tiene tu nombre!?", fondo: "img/scenes/dark.jpg", posicion: "position1" },
+  { texto: " ", fondo: "img/scenes/dark.jpg", posicion: "position1" },
+  { tipo: "video" },
+  { texto: "Así empiezan las historias bonitas", fondo: "img/scenes/dark.jpg", posicion: "position1" }
 ];
 
 /* ======================
@@ -43,7 +53,6 @@ const escenas = [
 function mostrarEscena() {
   const escena = escenas[index];
 
-  // fade out música antes del video
   if (index === escenas.length - 2) {
     fadeOutMusica();
   }
@@ -76,8 +85,15 @@ function renderTexto(texto) {
   let i = 0;
 
   typingInterval = setInterval(() => {
-    el.innerHTML += texto[i];
-    i++;
+    // detectar <br>
+    if (texto.slice(i, i + 4) === "<br>") {
+      el.innerHTML += "<br>";
+      i += 4;
+    } else {
+      el.innerHTML += texto[i];
+      i++;
+    }
+
     if (i >= texto.length) clearInterval(typingInterval);
   }, 40);
 }
@@ -85,9 +101,8 @@ function renderTexto(texto) {
 /* ======================
    VIBRACIÓN
 ====================== */
-
 let latidoTimeout = null;
-let ritmoBase = 950; // ms (≈ duración de un ciclo)
+let ritmoBase = 950;
 
 function iniciarLatidos() {
   latido.currentTime = 0;
@@ -97,7 +112,7 @@ function iniciarLatidos() {
 
   function latir() {
     if (navigator.vibrate) {
-      navigator.vibrate([80, 60, 120]); // tum-tum
+      navigator.vibrate([80, 60, 120]);
     }
 
     latidoTimeout = setTimeout(latir, ritmoBase);
@@ -107,10 +122,7 @@ function iniciarLatidos() {
 }
 
 function acelerarLatidos() {
-  // acelera audio
   latido.playbackRate = Math.min(latido.playbackRate + 0.2, 2);
-
-  // acelera ritmo
   ritmoBase = Math.max(400, ritmoBase - 150);
 }
 
@@ -162,7 +174,6 @@ function setupVideo() {
 
   let current = 0;
 
-  // ❤️ iniciar latidos
   iniciarLatidos();
 
   video.muted = true;
@@ -176,22 +187,15 @@ function setupVideo() {
     if (video.currentTime >= checkpoint.time && !checkpoint.usado) {
       checkpoint.usado = true;
 
-      // 🔥 tensión
       acelerarLatidos();
 
-      // 🎥 zoom progresivo
       video.style.transform = `scale(${1 + current * 0.05})`;
       video.style.transition = "transform 0.8s ease";
 
       video.pause();
 
-      // UI overlay
-      overlay.className = "";
-      overlay.classList.add("overlay-base");
-
-      if (checkpoint.posicion) {
-        overlay.classList.add(checkpoint.posicion);
-      }
+      overlay.className = "overlay-base";
+      overlay.classList.add(checkpoint.posicion);
 
       overlay.innerHTML = `
         <button class="btn-continuar" onclick="continuarVideo()">
@@ -208,22 +212,24 @@ function setupVideo() {
     video.muted = false;
     overlay.innerHTML = "";
 
-    // 💥 MOMENTO FINAL
-    if (current === checkpoints.length) {
+    if (current >= checkpoints.length) {
 
       detenerLatidosSuave(() => {
 
-        // 🤫 pausa dramática REAL
         setTimeout(() => {
           musicaFinal.currentTime = 0;
           musicaFinal.play().catch(() => {});
-        }, 4500);
+
+          iniciarCorazonesLoop();
+
+          setTimeout(() => {
+            escenaFinal();
+          }, 8000);
+
+        }, 4400);
 
       });
 
-      // 💕 efectos visuales
-      video.classList.add("video-romantico");
-      lanzarCorazones();
     }
 
     video.play();
@@ -233,12 +239,6 @@ function setupVideo() {
 /* ======================
    AUDIO
 ====================== */
-function iniciarLatidos() {
-  latido.currentTime = 0;
-  latido.playbackRate = 0.8;
-  latido.play().catch(() => {});
-}
-
 function fadeOutMusica() {
   const fade = setInterval(() => {
     if (musica.volume > 0.05) {
@@ -266,18 +266,32 @@ function fadeInMusica() {
 }
 
 /* ======================
-   EFECTOS
+   CORAZONES
 ====================== */
 function lanzarCorazones() {
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 12; i++) {
     const heart = document.createElement("div");
     heart.className = "corazon";
-    heart.innerHTML = "💖";
+    heart.innerHTML = Math.random() > 0.5 ? "❤️" : "💕";
+
     heart.style.left = Math.random() * 100 + "%";
+    heart.style.fontSize = (20 + Math.random() * 20) + "px";
+    heart.style.animationDuration = (2 + Math.random() * 2) + "s";
 
     document.body.appendChild(heart);
-    setTimeout(() => heart.remove(), 3000);
+
+    setTimeout(() => heart.remove(), 4000);
   }
+}
+
+let corazonesInterval = null;
+
+function iniciarCorazonesLoop() {
+  if (corazonesInterval) return;
+
+  corazonesInterval = setInterval(() => {
+    lanzarCorazones();
+  }, 800);
 }
 
 /* ======================
@@ -285,6 +299,53 @@ function lanzarCorazones() {
 ====================== */
 function setBackground(image) {
   document.body.style.backgroundImage = `url('${image}')`;
+}
+
+/* ======================
+   ESCENA FINAL (SOFT CINEMATICA)
+====================== */
+function escenaFinal() {
+  const overlay = document.createElement("div");
+
+  overlay.style.position = "fixed";
+  overlay.style.top = 0;
+  overlay.style.left = 0;
+  overlay.style.width = "100%";
+  overlay.style.height = "100%";
+
+  overlay.style.background = "rgba(0,0,0,0.55)";
+  overlay.style.backdropFilter = "blur(6px)";
+  overlay.style.webkitBackdropFilter = "blur(6px)";
+
+  overlay.style.display = "flex";
+  overlay.style.alignItems = "center";
+  overlay.style.justifyContent = "center";
+
+  overlay.style.opacity = 0;
+  overlay.style.transition = "opacity 2s ease";
+  overlay.style.zIndex = 9999;
+
+  overlay.innerHTML = `
+    <div style="
+      color: white;
+      font-size: 22px;
+      text-align: center;
+      font-family: sans-serif;
+      max-width: 80%;
+      line-height: 1.6;
+      text-shadow: 0 0 20px rgba(255,255,255,0.3), 0 2px 10px rgba(0,0,0,0.8);
+    ">
+      <p>Gracias por llegar hasta aquí Adri ❤️</p>
+      <p>Espero que te haya gustado esta pequeña historia hecha con mucho cariño 😊</p>
+      <p>Y que te haya hecho sentir aunque sea un poquito de lo que me haces sentir cuando puedo hablar contigo</p>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  setTimeout(() => {
+    overlay.style.opacity = 1;
+  }, 100);
 }
 
 /* ======================
