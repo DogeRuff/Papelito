@@ -1,0 +1,130 @@
+body {
+  margin: 0;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: background-image 0.8s ease-in-out;
+}
+
+
+
+#app {
+  position: fixed;
+  inset: 0;
+
+  display: flex;
+
+  text-align: center;
+  font-size: 1.3rem;
+ 
+
+  z-index: 1;
+}
+
+/* centro */
+.position1 {
+  justify-content: center;  /* horizontal */
+  align-items: center;  
+  color: white;
+}
+
+/* arriba */
+.position2 {
+  justify-content: center;
+  align-items: flex-start;
+  color: black
+}
+
+/* abajo */
+.position3 {
+  justify-content: center;
+  align-items: flex-end;
+  color: black;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.fade.show {
+  opacity: 1;
+}
+
+#overlay {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  pointer-events: none; /* 👈 IMPORTANTÍSIMO */
+}
+
+#overlay button {
+  pointer-events: auto;
+}
+
+.video-container {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+}
+
+.video-container video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 🔥 clave */
+}
+
+.btn-continuar {
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+
+  padding: 14px 22px;
+  font-size: 1.1rem;
+
+  border-radius: 14px;
+  border: none;
+
+  backdrop-filter: blur(6px);
+
+  text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+
+  cursor: pointer;
+
+  min-width: 200px;
+}
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.btn-continuar:active {
+  transform: scale(0.95);
+  opacity: 0.8;
+}
+
+#texto::after {
+  content: "|";
+  margin-left: 5px;
+  animation: blink 1s infinite;
+}
+
+#app p {
+  text-shadow: 
+    0 2px 10px rgba(0,0,0,0.8),
+    0 0 20px rgba(0,0,0,0.6);
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
