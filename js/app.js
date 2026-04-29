@@ -8,7 +8,7 @@ musica.volume = 0.4;
 
 const latido = new Audio("audio/heartbeat.mp3");
 latido.loop = true;
-latido.volume = 0.2;
+latido.volume = 0.6;
 
 const musicaFinal = new Audio("audio/romantica.mp3");
 musicaFinal.loop = true;
