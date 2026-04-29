@@ -43,6 +43,24 @@ body {
   color: black;
 }
 
+.overlay-center {
+  justify-content: center;
+  align-items: center;
+  margin-top: 100px;
+}
+
+.overlay-top {
+  justify-content: center;
+  align-items: flex-start;
+  margin-top: 100px;
+}
+
+.overlay-bottom {
+  justify-content: center;
+  align-items: flex-end;
+  margin-bottom: 100px;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -62,8 +80,7 @@ body {
   inset: 0;
 
   display: flex;
-  justify-content: center;
-  align-items: center;
+  
 
   pointer-events: none; /* 👈 IMPORTANTÍSIMO */
 }

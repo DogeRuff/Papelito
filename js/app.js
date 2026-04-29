@@ -110,9 +110,9 @@ function setupVideo() {
   const overlay = document.getElementById("overlay");
 
   const checkpoints = [
-    { time: 0.3, texto: "¿Qué es eso? 🤔<br>¿Quieres leerlo?" },
-    { time: 7, texto: "Awwww... ¿Seguir leyendo?" },
-    { time: 16, texto: "OMG!!! 👀<br>¿Seguir leyendo?" }
+    { time: 0.3, texto: "¿Qué es eso? 🤔<br>¿Quieres leerlo?", posicion: "overlay-center" },
+    { time: 7, texto: "Awwww... ¿Seguir leyendo?", posicion: "overlay-bottom" },
+    { time: 16, texto: "OMG!!! 👀<br>¿Seguir leyendo?", posicion: "overlay-top" }
   ];
 
   let current = 0;
@@ -130,11 +130,18 @@ function setupVideo() {
 
       video.pause();
 
-      overlay.innerHTML = `
+        overlay.className = ""; // limpiar
+        overlay.classList.add("overlay-base");
+
+        if (checkpoint.posicion) {
+        overlay.classList.add(checkpoint.posicion);
+        }
+
+        overlay.innerHTML = `
         <button class="btn-continuar" onclick="continuarVideo()">
-          ${checkpoint.texto}
+        ${checkpoint.texto}
         </button>
-      `;
+        `;
 
       current++;
     }
