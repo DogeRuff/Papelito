@@ -33,7 +33,7 @@ const escenas = [
   { texto: "Alguien te pasa un papelito 👀", fondo: "img/scenes/passing-note.gif", posicion: "position3" },
   { texto: "No es para ti.", fondo: "img/scenes/passing-note.gif", posicion: "position3" },
   { texto: ". . .", fondo: "img/scenes/dark.jpg", posicion: "position1" },
-  { texto: "O si . . . ?", fondo: "img/scenes/dark.jpg", posicion: "position1" },
+  { texto: "O eso pensaste, pero . . . ", fondo: "img/scenes/dark.jpg", posicion: "position1" },
   { tipo: "video" }
 ];
 
