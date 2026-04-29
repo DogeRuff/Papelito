@@ -83,6 +83,55 @@ function renderTexto(texto) {
 }
 
 /* ======================
+   VIBRACIÓN
+====================== */
+
+let latidoTimeout = null;
+let ritmoBase = 950; // ms (≈ duración de un ciclo)
+
+function iniciarLatidos() {
+  latido.currentTime = 0;
+  latido.playbackRate = 0.8;
+  latido.volume = 0.2;
+  latido.play().catch(() => {});
+
+  function latir() {
+    if (navigator.vibrate) {
+      navigator.vibrate([80, 60, 120]); // tum-tum
+    }
+
+    latidoTimeout = setTimeout(latir, ritmoBase);
+  }
+
+  latir();
+}
+
+function acelerarLatidos() {
+  // acelera audio
+  latido.playbackRate = Math.min(latido.playbackRate + 0.2, 2);
+
+  // acelera ritmo
+  ritmoBase = Math.max(400, ritmoBase - 150);
+}
+
+function detenerLatidosSuave(callback) {
+  clearTimeout(latidoTimeout);
+
+  const fade = setInterval(() => {
+    if (latido.volume > 0.05) {
+      latido.volume -= 0.05;
+    } else {
+      latido.pause();
+      latido.currentTime = 0;
+      latido.volume = 0.2;
+      clearInterval(fade);
+
+      if (callback) callback();
+    }
+  }, 100);
+}
+
+/* ======================
    VIDEO
 ====================== */
 function iniciarVideo() {
@@ -113,7 +162,7 @@ function setupVideo() {
 
   let current = 0;
 
-  // ❤️ INICIAR LATIDOS
+  // ❤️ iniciar latidos
   iniciarLatidos();
 
   video.muted = true;
@@ -127,19 +176,22 @@ function setupVideo() {
     if (video.currentTime >= checkpoint.time && !checkpoint.usado) {
       checkpoint.usado = true;
 
-      // subir tensión
-      latido.playbackRate += 0.3;
-      latido.volume = Math.min(latido.volume + 0.05, 1);
+      // 🔥 tensión
+      acelerarLatidos();
 
-      // zoom progresivo
+      // 🎥 zoom progresivo
       video.style.transform = `scale(${1 + current * 0.05})`;
       video.style.transition = "transform 0.8s ease";
 
       video.pause();
 
+      // UI overlay
       overlay.className = "";
       overlay.classList.add("overlay-base");
-      if (checkpoint.posicion) overlay.classList.add(checkpoint.posicion);
+
+      if (checkpoint.posicion) {
+        overlay.classList.add(checkpoint.posicion);
+      }
 
       overlay.innerHTML = `
         <button class="btn-continuar" onclick="continuarVideo()">
@@ -159,14 +211,17 @@ function setupVideo() {
     // 💥 MOMENTO FINAL
     if (current === checkpoints.length) {
 
-      latido.pause();
-      latido.currentTime = 0;
+      detenerLatidosSuave(() => {
 
-      setTimeout(() => {
-        musicaFinal.currentTime = 0;
-        musicaFinal.play().catch(() => {});
-      }, 4500);
+        // 🤫 pausa dramática REAL
+        setTimeout(() => {
+          musicaFinal.currentTime = 0;
+          musicaFinal.play().catch(() => {});
+        }, 4500);
 
+      });
+
+      // 💕 efectos visuales
       video.classList.add("video-romantico");
       lanzarCorazones();
     }
